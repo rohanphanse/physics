@@ -7,7 +7,6 @@ class Line {
         this.end = params.end
         this.color = params.color || "black"
         this.useSVG = params.useSVG !== undefined ? params.useSVG : true
-
         this.create()
     }
 
@@ -16,9 +15,9 @@ class Line {
         const id = generateID()
         line.id = id
         line.setAttribute("x1", this.start.x)
-        line.setAttribute("y1", HEIGHT.value - this.start.y)
+        line.setAttribute("y1", HEIGHT - this.start.y)
         line.setAttribute("x2", this.end.x)
-        line.setAttribute("y2", HEIGHT.value - this.end.y);
+        line.setAttribute("y2", HEIGHT - this.end.y);
         line.setAttribute("stroke", this.color)
         line.style.strokeWidth = "1"
         
@@ -79,9 +78,6 @@ class Rectangle {
         this.svg = document.getElementById(svgID)
 
         this.rectangle = document.getElementById(rectangleID)
-
-        // SVG CSS styles
-
     }
 
     updatePosition(newPosition) {

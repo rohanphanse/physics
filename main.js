@@ -4,18 +4,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const grid = document.getElementById("grid")
 
     // Container
-    container.style.height = `${HEIGHT.value}px`
-    container.style.width = `${WIDTH.value}px`
+    container.style.height = `${HEIGHT}px`
+    container.style.width = `${WIDTH}px`
 
     // Grid
-    createGrid(HEIGHT.value / BOX_UNIT.value, WIDTH.value / BOX_UNIT.value)
+    createGrid(HEIGHT / BOX_UNIT, WIDTH / BOX_UNIT)
 
     function createGrid(rows, columns) {
         for (let r = 1; r < rows; r++) {
             new Line({
                 parent: grid,
-                start: { x: 0, y: HEIGHT.value * r / rows },
-                end: { x: WIDTH.value, y: HEIGHT.value * r / rows },
+                start: { x: 0, y: HEIGHT * r / rows },
+                end: { x: WIDTH, y: HEIGHT * r / rows },
                 color: "#e8e8e8",
                 useSVG: false
             })
@@ -23,8 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let c = 1; c < columns; c++) {
             new Line({
                 parent: grid,
-                start: { x: WIDTH.value * c / columns, y: 0 },
-                end: { x: WIDTH.value * c / columns, y: HEIGHT.value },
+                start: { x: WIDTH * c / columns, y: 0 },
+                end: { x: WIDTH * c / columns, y: HEIGHT },
                 color: "#e8e8e8",
                 useSVG: false
             })
@@ -42,14 +42,14 @@ document.addEventListener("DOMContentLoaded", () => {
         parent: container,
         height: 100,
         width: 100,
-        position: { x: WIDTH.value / 2 - 50, y: HEIGHT.value / 2 - 50 },
+        position: { x: WIDTH / 2 - 50, y: HEIGHT / 2 - 50 },
         color: { stroke: "blue" }
     })
 
     const ground = new Rectangle({
         parent: container,
         height: 100,
-        width: WIDTH.value,
+        width: WIDTH,
         position: { x: 0, y: 0 }
     })
 
@@ -76,6 +76,14 @@ document.addEventListener("DOMContentLoaded", () => {
         sprite: blueBox,
         mass: 10
     })
+
+    // const world = new World()
+    // world.sprites.push(boxSprite)
+    // world.sprites.push(tinyBoxSprite)
+    // world.sprites.push(blueBoxSprite)
+
+    // world.createTask(boxSprite, "update-velocity", { x: 3, y: 0 })
+    // world.start()
 
     demo1()
     
