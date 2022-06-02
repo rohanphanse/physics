@@ -63,13 +63,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const boxSprite = new Sprite({
         sprite: box, 
-        mass: 2
+        mass: 30
     })
 
     const tinyBoxSprite = new Sprite({
         sprite: tinyBox,
         position: { x: 0, y: 100 },
-        mass: 30
+        mass: 2
     })
 
     const blueBoxSprite = new Sprite({
@@ -77,54 +77,31 @@ document.addEventListener("DOMContentLoaded", () => {
         mass: 10
     })
 
-    // const world = new World()
-    // world.sprites.push(boxSprite)
-    // world.sprites.push(tinyBoxSprite)
-    // world.sprites.push(blueBoxSprite)
+    demo()
 
-    // world.createTask(boxSprite, "update-velocity", { x: 3, y: 0 })
-    // world.start()
-
-    demo1()
+    function demo() {
+        const world = new World()
+        world.sprites.push(boxSprite)
+        world.sprites.push(tinyBoxSprite)
+        world.sprites.push(blueBoxSprite)
     
-    function demo1() {
-        blueBoxSprite.forces["applied-up"] = { x: 0, y: -blueBoxSprite.forces["gravity"].y }
-        console.log(blueBoxSprite.forces)
-
-        setTimeout(() => {
-            boxSprite.velocity = { x: 3, y: 0 }
-        }, 500)
-
-        setTimeout(() => {
-            tinyBoxSprite.velocity = { x: 3, y: 0 }
-        }, 4000)
-
-        setTimeout(() => {
-            tinyBoxSprite.velocity = { x: 2, y: 10 }
-        }, 4500)
-
-        const time = setInterval(() => {
-            boxSprite.move()
-            tinyBoxSprite.move()
-            blueBoxSprite.move()
-        }, 10)
-
-        setTimeout(() => {
-            boxSprite.velocity.y = 8
-        }, 1000)
-
-        setTimeout(() => {
-            tinyBoxSprite.forces["applied-left"] = { x: -1, y: 0 }
-        }, 7000)
-
-        setTimeout(() => {
-            delete blueBoxSprite.forces["applied-up"]
-            console.log(blueBoxSprite.forces)
-        }, 12000)
-
-        setTimeout(() => {
-            clearInterval(time)
-        }, 15000)
+        world.createTask(blueBoxSprite, "add-force", {
+            name: "applied-up",
+            force: { x: 0, y: -blueBoxSprite.forces["gravity"].y }
+        })
+        world.createTask(boxSprite, "update-velocity", { x: 100, y: 0 }, 0.5)
+        world.createTask(boxSprite, "update-velocity-y", 250, 1.5)
+        world.createTask(tinyBoxSprite, "update-velocity", { x: 75, y: 0 }, 8)
+        world.createTask(tinyBoxSprite, "update-velocity-y", 300, 11)
+        world.createTask(boxSprite, "update-velocity", { x: 0, y: 0 }, 15)
+        world.createTask(tinyBoxSprite, "add-force", {
+            name: "applied-left",
+            force: { x: -50, y: 0 }
+        }, 18)
+        world.createTask(blueBoxSprite, "delete-force", "applied-up", 30)
+        world.createTask(tinyBoxSprite, "delete-force", "applied-left", 32)
+        
+        world.start()
     }
 })
 

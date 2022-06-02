@@ -15,7 +15,8 @@ class Sprite {
         this.sprite.updatePosition(this.position)
 
         // Gravitational force
-        const gravity = { x: 0, y:  this.mass * -0.098 }
+        // g = -100 pixels / s^2
+        const gravity = { x: 0, y:  this.mass * -100 }
         const normal = { x: 0, y: this.position.y <= 100 ? -gravity.y : 0 }
         this.forces["gravity"] = gravity
         this.forces["normal"] = normal
@@ -25,6 +26,7 @@ class Sprite {
 
     move() {
         const netForce = { x: 0, y: 0 }
+        // console.log("forces", this.forces)
         for (const force in this.forces) {
             netForce.x += this.forces[force].x
             netForce.y += this.forces[force].y
@@ -33,10 +35,11 @@ class Sprite {
         this.acceleration.x = netForce.x / this.mass
         this.acceleration.y = netForce.y / this.mass
 
-        this.velocity.x += this.acceleration.x
-        this.velocity.y += this.acceleration.y
-        this.position.x += this.velocity.x
-        this.position.y += this.velocity.y
+        const dt = 1 / FPS
+        this.velocity.x += this.acceleration.x * dt
+        this.velocity.y += this.acceleration.y * dt
+        this.position.x += this.velocity.x * dt
+        this.position.y += this.velocity.y * dt
         this.position.y = this.position.y <= 100 ? 100 : this.position.y
 
         this.sprite.updatePosition(this.position)
@@ -48,7 +51,7 @@ class Sprite {
 }
 
 class World {
-    constructor(params) {
+    constructor() {
         this.time = 0
         this.sprites = []
         this.tasks = []
@@ -56,22 +59,22 @@ class World {
 
     start() {
         this.frame = () => {
-            this.testTime = Date.now()
             for (let t = 0; t < this.tasks.length; t++) {
                 const task = this.tasks[t]
                 if (task.time <= this.time) {
+                    console.log(this.time, task)
                     task.taskFunction()
                     delete this.tasks[t]
                 }
             }
             this.tasks = this.tasks.filter(e => e !== undefined)
 
-            for (let s = 0; s < this.sprites.length; s++) {
-                this.sprites[s].move()
+            for (const sprite of this.sprites) {
+                sprite.move()
             }
 
             // Next frame
-            this.time += FPS
+            this.time++
             this.loop = requestAnimationFrame(this.frame)
         }
         
@@ -79,14 +82,7 @@ class World {
         this.loop = requestAnimationFrame(this.frame)
     }
 
-    createTask(spriteRef, taskString, value, startTime) {
-        let sprite = null
-        for (const s of this.sprites) {
-            if (s.id === spriteRef.id) {
-                sprite = s
-                break
-            }
-        }
+    createTask(sprite, taskString, value, startTime = 0) {
 
         let taskFunction = null
         switch (taskString) {
@@ -97,13 +93,19 @@ class World {
                 taskFunction = () => (sprite.forces[value.name] = value.force)
                 break
             case "delete-force":
-                taskFunction = () => (delete sprite.forces[value.name])
+                taskFunction = () => (delete sprite.forces[value])
                 break
             case "update-acceleration":
                 taskFunction = () => (sprite.acceleration = value)
                 break
             case "update-velocity":
                 taskFunction = () => (sprite.velocity = value)
+                break
+            case "update-velocity-x":
+                taskFunction = () => (sprite.velocity.x = value)
+                break
+            case "update-velocity-y":
+                taskFunction = () => (sprite.velocity.y = value)
                 break
             case "update-position":
                 taskFunction = () => (sprite.position = value)
@@ -115,7 +117,7 @@ class World {
         this.tasks.push({
             sprite,
             taskFunction,
-            time: startTime ? frames * FPS : this.time
+            time: startTime * FPS
         })
     }
 }
